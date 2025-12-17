@@ -2,9 +2,9 @@
 #include <tuple>
 
 struct Date {
-    unsigned year;
-    unsigned month;
-    unsigned day;
+    unsigned year = 0u;
+    unsigned month = 0u;
+    unsigned day = 0u;
 };
 
 struct StudentInfo {
