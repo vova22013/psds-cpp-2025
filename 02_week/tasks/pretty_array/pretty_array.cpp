@@ -2,8 +2,8 @@
 #include <iostream>
 
 void PrintArray(const int* begin, const int* end, size_t limit = 0) {
-    auto _start = const_cast<int*>(begin);
-    auto _end   = const_cast<int*>(end);
+    auto _start = begin;
+    auto _end   = end;
     auto inc = 1;
     if (std::distance(begin, end) < 0) {
         inc = -1;
