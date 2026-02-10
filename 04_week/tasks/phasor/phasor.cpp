@@ -108,14 +108,14 @@ Phasor::Phasor(const Phasor& p) {
 }
 
 Phasor Phasor::operator+(const Phasor& other) const {
-    double real = this->Real() + other.Real();
-    double imag = this->Imag() + other.Imag();
+    double real = Real() + other.Real();
+    double imag = Imag() + other.Imag();
     return Phasor(real, imag, AlgTag());
 }
 
 Phasor Phasor::operator-(const Phasor& other) const {
-    double real = this->Real() - other.Real();
-    double imag = this->Imag() - other.Imag();
+    double real = Real() - other.Real();
+    double imag = Imag() - other.Imag();
     return Phasor(real, imag, AlgTag());
 }
 
@@ -139,15 +139,15 @@ Phasor Phasor::operator-() const {
 }
 
 Phasor& Phasor::operator+=(const Phasor& other) {
-    double real = this->Real() + other.Real();
-    double imag = this->Imag() + other.Imag();
+    double real = Real() + other.Real();
+    double imag = Imag() + other.Imag();
     this->SetCartesian(real, imag);
     return *this;
 }
 
 Phasor& Phasor::operator-=(const Phasor& other) {
-    double real = this->Real() - other.Real();
-    double imag = this->Imag() - other.Imag();
+    double real = Real() - other.Real();
+    double imag = Imag() - other.Imag();
     this->SetCartesian(real, imag);
     return *this;
 }
@@ -227,8 +227,8 @@ double Phasor::Imag() const {
 }
 
 Phasor Phasor::Conj() const {
-    double real = this->Real();
-    double imag = -this->Imag();
+    double real = Real();
+    double imag = -Imag();
     return Phasor(real, imag, AlgTag());
 }
 

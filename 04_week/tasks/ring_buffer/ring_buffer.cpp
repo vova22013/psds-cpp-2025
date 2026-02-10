@@ -28,7 +28,7 @@ public:
     bool Full() const;
 
     void Clear();
-    void Resize(int new_capacity);
+    void Resize(size_t new_capacity);
 
     std::vector<int> Vector() const;
 
@@ -152,7 +152,7 @@ void RingBuffer::Push(const int& num) {
 
 bool RingBuffer::TryPush(const int& num) {
     if (m_size == m_buffer.capacity()) return false;
-    this->Push(num);
+    Push(num);
     return true;
 }
 
@@ -166,16 +166,16 @@ void RingBuffer::Pop() {
 
 bool RingBuffer::TryPop(int& num) {
     if (m_size == 0) return false;
-    num = this->Back();
-    this->Pop();
+    num = Back();
+    Pop();
     return true;
 }
 
-void RingBuffer::Resize(int new_capacity) {
-    if (new_capacity <= 0) new_capacity = 1;
+void RingBuffer::Resize(size_t new_capacity) {
+    if (new_capacity == 0) new_capacity = 1;
     std::vector<int> new_buf;
     
-    if (m_size <= static_cast<size_t>(new_capacity)) {
+    if (m_size <= new_capacity) {
         new_buf.reserve(m_size);
         for (size_t i = 0; i < m_size; ++i) {
             new_buf.push_back((*this)[i]);
@@ -184,10 +184,10 @@ void RingBuffer::Resize(int new_capacity) {
     else {
         size_t off = m_size - new_capacity;
         new_buf.reserve(new_capacity);
-        for (size_t i = 0; i < static_cast<size_t>(new_capacity); ++i) {
+        for (size_t i = 0; i < new_capacity; ++i) {
             new_buf.push_back((*this)[i + off]);
         }
-        m_size = static_cast<size_t>(new_capacity);
+        m_size = new_capacity;
     }
 
     m_buffer.clear();
@@ -257,4 +257,10 @@ std::vector<int> RingBuffer::Vector() const {
         res.push_back(*(it + i));
     }
     return res;
+}
+
+void func(double one, double two) {
+    for(int i=0;i<2;i++){
+
+    };
 }
