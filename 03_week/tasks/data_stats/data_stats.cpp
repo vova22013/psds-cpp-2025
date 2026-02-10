@@ -18,8 +18,7 @@ struct DataStats {
     double avg = 0.;
     
     for (size_t i = 0; i < v_size; ++i) {
-        sum_sq += static_cast<long long>(vec[i]) * 
-                  static_cast<long long>(vec[i]);
+        sum_sq += static_cast<long long>(vec[i]) * vec[i];
         avg += static_cast<double>(vec[i]);
         mid_memb += 2 * static_cast<long long>(vec[i]);
     }

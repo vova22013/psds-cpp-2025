@@ -7,9 +7,7 @@ void Filter(std::vector<int>& vec, bool (*func)(int)) {
     auto last_correct_it = vec.begin();
     for(auto it = vec.begin(); it != vec.end(); ++it) {
         if (func(*it)) {
-            auto temp = *it;
-            *it = *last_correct_it;
-            *last_correct_it = temp;
+            std::swap(*it, *last_correct_it);
             ++last_correct_it;
         }
     }
