@@ -316,7 +316,7 @@ TEST(WeakPtrTest, AssignmentFromSharedPtr) {
 
     EXPECT_EQ(wp.UseCount(), 1);
     EXPECT_FALSE(wp.Expired());
-    auto sp_from_wp = wp2.Lock();
+    auto sp_from_wp = wp.Lock();
     EXPECT_EQ(*sp_from_wp, "test2");
 }
 
