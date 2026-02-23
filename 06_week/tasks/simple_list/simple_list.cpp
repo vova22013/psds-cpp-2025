@@ -113,7 +113,7 @@ SimpleList::SimpleList(SimpleList&& other) noexcept :
 SimpleList& SimpleList::operator=(const SimpleList& other) {
     if (this != &other) {
         if (node_) {
-            while (!Empty()) PopBack();
+            Clear();
             delete node_;
         }
         node_ = new Node(other.node_->data_);
@@ -129,7 +129,7 @@ SimpleList& SimpleList::operator=(const SimpleList& other) {
 SimpleList& SimpleList::operator=(SimpleList&& other) noexcept {
     if (this != &other) {
         if (node_) {
-            while (!Empty()) PopBack();
+            Clear();
             delete node_;
         }
         size_ = other.size_;
@@ -142,7 +142,7 @@ SimpleList& SimpleList::operator=(SimpleList&& other) noexcept {
 
 SimpleList::~SimpleList() {
     if (node_ && (node_->prev_ != node_ || node_->next_ != node_)) {
-        while (!Empty()) PopBack();
+        Clear();
     }
     delete node_;
 };
