@@ -4,263 +4,177 @@
 class RingBuffer {
 public:
     RingBuffer();
-    RingBuffer(const int& capacity);
-    RingBuffer(const int& capacity, const int& num);
+    RingBuffer(size_t capacity);
+    RingBuffer(size_t capacity, int num);
     RingBuffer(const std::initializer_list<int>& init_list);
     RingBuffer(const RingBuffer& buf);
 
-public:
-    void Push(const int& num);
-    bool TryPush(const int& num);
-
+    void Push(int num);
+    bool TryPush(int num);
     void Pop();
     bool TryPop(int& num);
-
-    int Size() const;
-    int Capacity() const;
-
+    size_t Size() const;
+    size_t Capacity() const;
     int& Front();
     int& Back();
-    int Front() const;
-    int Back() const;
-
+    const int& Front() const;
+    const int& Back() const;
     bool Empty() const;
     bool Full() const;
-
     void Clear();
-    void Resize(size_t new_capacity);
-
+    void Resize(size_t new_cap);
     std::vector<int> Vector() const;
 
-    int& operator[](const size_t& ind);
-    int operator[](const size_t& ind) const;
-
+    int& operator[](size_t ind);
+    const int& operator[](size_t ind) const;
     RingBuffer& operator=(const RingBuffer& other);
 
 private:
-    size_t m_size = 0;
-    std::vector<int> m_buffer;
-    std::vector<int>::iterator m_first_ind = m_buffer.begin();
-    std::vector<int>::iterator m_last_ind = m_buffer.begin();
+    size_t size_ = 0;
+    std::vector<int> buf_;
+    std::vector<int>::iterator fptr_ = buf_.begin();
+    std::vector<int>::iterator lptr_ = buf_.begin();
 };
 
 RingBuffer::RingBuffer() = default;
 
-RingBuffer::RingBuffer(const int& capacity) {
-    if (capacity <= 0) m_buffer.reserve(1);
-    else m_buffer.reserve(capacity);
-    m_first_ind = m_buffer.begin();
-    m_last_ind = m_buffer.begin();
+RingBuffer::RingBuffer(size_t capacity) {
+    capacity == 0 ? buf_.resize(1) : buf_.resize(capacity);
+    fptr_ = buf_.begin();
+    lptr_ = buf_.begin();
 }
 
-RingBuffer::RingBuffer(const int& capacity, const int& num) {
-    if (capacity <= 0) m_buffer.resize(1, num);
-    else m_buffer.resize(capacity, num);
-    m_size = m_buffer.size();
-    m_first_ind = m_buffer.begin();
-    m_last_ind = m_buffer.end() - 1;
+RingBuffer::RingBuffer(size_t capacity, int num) {
+    capacity == 0 ? buf_.resize(1, num) : buf_.resize(capacity, num);
+    size_ = buf_.size();
+    fptr_ = buf_.begin();
+    Empty() ? lptr_ = buf_.begin() : lptr_ = buf_.begin() + size_ - 1;
 }
 
-RingBuffer::RingBuffer(const std::initializer_list<int>& init_list)
-    : m_size(init_list.size()), m_buffer(init_list) {
-    if (m_size == 0) {
-        m_buffer.reserve(1);
-        m_last_ind = m_buffer.begin();
-    }
-    else m_last_ind = m_buffer.end() - 1;
-    m_first_ind = m_buffer.begin();
+RingBuffer::RingBuffer(const std::initializer_list<int>& init_list) : 
+    size_(init_list.size()), 
+    buf_(init_list) {
+    if (size_ == 0) buf_.resize(1);
+    fptr_ = buf_.begin();
+    Empty() ? lptr_ = buf_.begin() : lptr_ = buf_.begin() + size_ - 1;
 };
 
-RingBuffer::RingBuffer(const RingBuffer& buf)
-    : m_size(buf.m_size) {
-    m_buffer.reserve(buf.m_buffer.capacity());
-    m_buffer = buf.m_buffer;
-    size_t d2last = static_cast<size_t>(buf.m_last_ind - buf.m_buffer.begin());
-    size_t d2first = static_cast<size_t>(buf.m_first_ind - buf.m_buffer.begin());
-    m_first_ind = m_buffer.begin() + d2first;
-    m_last_ind = m_buffer.begin() + d2last;
-};
-
-int& RingBuffer::operator[](const size_t& ind) {
-    if (m_size == 0 || ind >= m_size || ind >= m_buffer.size()) {
-        int* n = nullptr;
-        return *n;
-    }
-
-    if (m_first_ind < m_last_ind) return *(m_first_ind + ind);
-
-    size_t dist = std::distance(m_first_ind, m_buffer.end());
-    if (ind >= dist) return m_buffer[ind - dist];
-    else return *(m_first_ind + ind);
+RingBuffer::RingBuffer(const RingBuffer& other) :
+    size_(other.size_),
+    buf_(other.buf_),
+    fptr_(buf_.begin()) {
+    Empty() ? lptr_ = buf_.begin() : lptr_ = buf_.begin() + size_ - 1;
 }
 
-int RingBuffer::operator[](const size_t& ind) const {
-    if (m_size == 0 || ind >= m_size || ind >= m_buffer.size()) {
-        int* n = nullptr;
-        return *n;
-    }
+const int& RingBuffer::operator[](size_t pos) const {
+    size_t dist = (buf_.begin() + size_) - fptr_;
+    return (pos < dist) ? *(fptr_ + pos) : *(buf_.begin() + (pos - dist));  
+}
 
-    size_t dist = 0;
-    if (m_first_ind < m_last_ind) return *(m_first_ind + ind); 
-    else dist = static_cast<size_t>(m_buffer.end() - m_first_ind);
-
-    if (ind >= dist) return m_buffer[ind - dist];
-    return *(m_first_ind + ind);
+int& RingBuffer::operator[](size_t pos) {
+    size_t dist = (buf_.begin() + size_) - fptr_;
+    return (pos < dist) ? *(fptr_ + pos) : *(buf_.begin() + (pos - dist));
 }
 
 RingBuffer& RingBuffer::operator=(const RingBuffer& other) {
-    if (&other == this) return *this;
-    
-    m_buffer = other.m_buffer;
-    m_buffer.reserve(other.m_buffer.capacity());
-    m_first_ind = other.m_first_ind;
-    m_last_ind = other.m_last_ind;
-    m_size = other.m_size;
+    if (&other != this) {
+        buf_ = other.buf_;
+        fptr_ = other.fptr_;
+        lptr_ = other.lptr_;
+        size_ = other.size_;
+    }
     return *this;
 }
 
-void RingBuffer::Push(const int& num) {
-    if (m_size == 0) {
-        ++m_size;
-        if (m_buffer.size() == 0) m_buffer.push_back(num);
-        m_first_ind = m_buffer.begin();
-        *m_last_ind = num;
+void RingBuffer::Push(int num) {
+    if (size_ < buf_.capacity()) {
+        if (++lptr_ == buf_.end()) lptr_ = buf_.begin();
+        size_++ == 0 ? *(--lptr_) = num : *lptr_ = num;
+        return;
     }
-    else {
-        if (m_size < m_buffer.capacity()) {
-            if (m_last_ind + 1 == m_buffer.end()) {
-                if (m_buffer.size() != m_buffer.capacity()) {
-                    m_buffer.push_back(num);
-                    ++m_last_ind;
-                }
-                else {
-                    m_last_ind = m_buffer.begin();
-                    *m_last_ind = num;
-                }
-            }
-            else *(++m_last_ind) = num;
-            ++m_size;
-        }
-        else {
-            *m_first_ind = num;
-            m_last_ind = m_first_ind;
-            ++m_first_ind;
-            if (m_first_ind == m_buffer.end()) m_first_ind = m_buffer.begin();
-        }
-    }
+    *fptr_ = num;
+    lptr_ = fptr_;
+    if (++fptr_ == buf_.begin()+ size_) fptr_ = buf_.begin(); 
 }
 
-bool RingBuffer::TryPush(const int& num) {
-    if (m_size == m_buffer.capacity()) return false;
-    Push(num);
-    return true;
+bool RingBuffer::TryPush(int num) {
+    return !Full() ? (Push(num), true) : false;
 }
 
 void RingBuffer::Pop() {
-    if (m_size != 0) {
-        --m_size;
-        ++m_first_ind;
-        if (m_first_ind == m_buffer.end()) m_first_ind = m_buffer.begin();
+    if (!Empty()) {
+        --size_;
+        if (++fptr_ == buf_.end()) fptr_ = buf_.begin();
     }
 }
 
 bool RingBuffer::TryPop(int& num) {
-    if (m_size == 0) return false;
-    num = Back();
-    Pop();
-    return true;
+    return !Empty() ? (num = Back(), Pop(), true) : false;
 }
 
-void RingBuffer::Resize(size_t new_capacity) {
-    if (new_capacity == 0) new_capacity = 1;
-    std::vector<int> new_buf;
+void RingBuffer::Resize(size_t new_cap) {
+    if (new_cap == 0) new_cap = 1;
     
-    if (m_size <= new_capacity) {
-        new_buf.reserve(m_size);
-        for (size_t i = 0; i < m_size; ++i) {
-            new_buf.push_back((*this)[i]);
-        }
+    auto temp = Vector();
+    buf_.clear();
+    buf_.shrink_to_fit();
+    buf_.resize(new_cap);
+
+    size_t offset = 0;
+    if (size_ > new_cap) {
+        offset = size_ - new_cap;
+        size_ = new_cap;
     }
-    else {
-        size_t off = m_size - new_capacity;
-        new_buf.reserve(new_capacity);
-        for (size_t i = 0; i < new_capacity; ++i) {
-            new_buf.push_back((*this)[i + off]);
-        }
-        m_size = new_capacity;
+    for (size_t i = 0; i < size_; ++i) {
+        buf_[i] = temp[i + offset];
     }
 
-    m_buffer.clear();
-    m_buffer.shrink_to_fit();
-    m_buffer.reserve(new_capacity);
-    m_buffer = new_buf;
-    m_first_ind = m_buffer.begin();
-    m_last_ind = m_first_ind + (m_size - 1);
+    fptr_ = buf_.begin();
+    lptr_ = buf_.begin() + size_ - 1;
 }
 
 void RingBuffer::Clear() {
-    m_size = 0;
-    m_first_ind = m_buffer.begin();
-    m_last_ind = m_buffer.begin();
+    size_ = 0;
+    fptr_ = buf_.begin();
+    lptr_ = buf_.begin();
 }
 
 int& RingBuffer::Front() {
-    if (m_size != 0) return *m_last_ind;
-    int* n = nullptr;
-    return *n;
+    return (*this)[size_ - 1];
 }
 
 int& RingBuffer::Back() {
-    if (m_size != 0) return *m_first_ind;
-    int* n = nullptr;
-    return *n;
+    return (*this)[0];
 }
 
-int RingBuffer::Front() const {
-    if (m_size != 0) return *m_last_ind;
-    int* n = nullptr;
-    return *n;
+const int& RingBuffer::Front() const {
+    return (*this)[size_ - 1];
 }
 
-int RingBuffer::Back() const {
-    if (m_size != 0) return *m_first_ind;
-    int* n = nullptr;
-    return *n;
+const int& RingBuffer::Back() const {
+    return (*this)[0];
 }
 
 bool RingBuffer::Full() const {
-    return m_size == m_buffer.capacity();
+    return size_ == buf_.capacity();
 }
 
 bool RingBuffer::Empty() const {
-    return m_size == 0;
+    return size_ == 0;
 }
 
-int RingBuffer::Size() const {
-    return m_size;
+size_t RingBuffer::Size() const {
+    return size_;
 }
 
-int RingBuffer::Capacity() const{
-    return m_buffer.capacity();
+size_t RingBuffer::Capacity() const{
+    return buf_.capacity();
 }
 
 std::vector<int> RingBuffer::Vector() const {
-    std::vector<int> res;
-    res.reserve(m_buffer.size());
-    auto it = m_first_ind;
-    size_t d2first = static_cast<size_t>(m_first_ind - m_buffer.begin());
-    for (size_t i = 0, j = 0; j < m_size; ++i, ++j) {
-        if ((it + i) == m_buffer.end()) {
-            it -= d2first;
-            i = 0;
-        }
-        res.push_back(*(it + i));
+    std::vector<int> res(size_);
+    for (size_t i = 0; i < size_; ++i) {
+        res[i] = (*this)[i];
     }
     return res;
-}
-
-void func(double one, double two) {
-    for(int i=0;i<2;i++){
-
-    };
 }
