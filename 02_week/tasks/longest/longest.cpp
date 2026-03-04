@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-const char* FindLongestSubsequence(const char* begin, const char* end,
+char* FindLongestSubsequence(const char* begin, const char* end,
     size_t& count) {
     
     if (!begin || !end || std::distance(begin, end) <= 0) {
@@ -29,5 +29,5 @@ const char* FindLongestSubsequence(const char* begin, const char* end,
         res_ind = end - curr_count;
     }
 
-    return res_ind;
+    return const_cast<char*>(res_ind);
 }

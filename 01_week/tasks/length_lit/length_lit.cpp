@@ -1,7 +1,7 @@
 namespace {
-    const double m_in_inch = 0.0254;
-    const double m_in_foot = 0.3048;
-    const double m_in_cm = 0.01;
+    constexpr double m_in_inch = 0.0254;
+    constexpr double m_in_foot = 0.3048;
+    constexpr double m_in_cm = 0.01;
 }
 
 
@@ -31,7 +31,7 @@ constexpr long double operator""_cm_to_ft(long double cm) {
     return cm / (m_in_foot / m_in_cm);
 }
 constexpr long double operator""_cm_to_m(long double cm) {
-    return cm / m_in_cm;
+    return cm * m_in_cm;
 }
 
 

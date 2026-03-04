@@ -5,14 +5,11 @@ class Stack {
 public:
     void Push(const int& num);
     bool Pop();
-    
     int& Top();
-    int Top() const;
-    
-    int Size() const;
+    const int& Top() const;
+    size_t Size() const;
     void Clear();
     bool Empty() const;
-
     void Swap(Stack& other);
 
     bool operator==(const Stack& other) const;
@@ -35,18 +32,18 @@ bool Stack::Pop() {
 }
 
 int& Stack::Top() {
-    if (!stack.empty()) return stack.back();
+    return stack.back();
 }
 
-int Stack::Top() const {
-    if (!stack.empty()) return stack.back();
+const int& Stack::Top() const {
+    return stack.back();
 }
 
 void Stack::Clear() {
     stack.clear();
 }
 
-int Stack::Size() const {
+size_t Stack::Size() const {
     return stack.size();
 }
 

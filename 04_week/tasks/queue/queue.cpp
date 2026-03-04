@@ -17,9 +17,9 @@ public:
     int& Front();
     int& Back();
     const int& Front() const;
-    int Back() const;
+    const int& Back() const;
 
-    int Size() const;
+    size_t Size() const;
     void Clear();
     bool Empty() const;
 
@@ -72,7 +72,6 @@ bool Queue::Pop() {
         m_out_vec.pop_back();
         return true;
     }
-
     UpdateOutVecQueue();
     if (m_out_vec.empty()) return false;
     m_out_vec.pop_back();
@@ -94,12 +93,12 @@ int& Queue::Back() {
     return m_out_vec.front();
 }
 
-int Queue::Back() const {
+const int& Queue::Back() const {
     if (!m_in_vec.empty()) return m_in_vec.back();
     return m_out_vec.front();
 }
 
-int Queue::Size() const {
+size_t Queue::Size() const {
     return m_in_vec.size() + m_out_vec.size();
 }
 

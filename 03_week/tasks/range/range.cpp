@@ -2,7 +2,7 @@
 #include <vector>
 
 std::vector<int> Range(int from, int to, int step = 1) {
-    if ((to == from) || (step <= 0 ? to > from : from > to)) 
+    if ((to == from) || (step == 0) || (step < 0 ? to > from : from > to)) 
         return std::vector<int>();
     
     size_t num = std::abs(to - from);
