@@ -23,15 +23,6 @@ void PrintCheckFlags(CheckFlags flags) {
     bool the_first = true;
     std::string str_flags = "[";
 
-    size_t max_value_flag = 32;
-    for (size_t i = 0; i < max_value_flag; i >>= 1) {
-        auto b_i = static_cast<uint8_t>(flags) >> i & 1u;
-        if (b_i) {
-
-            
-        } 
-    }
-
     if (static_cast<uint8_t>(flags) &
         static_cast<uint8_t>(CheckFlags::TIME)) {
         str_flags += "TIME";
